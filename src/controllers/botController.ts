@@ -1,49 +1,20 @@
-import { saveTransactions } from "../services/transactionService";
-import { parseWithGemini } from "../services/modelAiService";
 import { Telegraf } from "telegraf";
 import { welcomeMessage } from "../constant/welcomeMessage";
+import { botPhotoHandle } from "../utils/botPhotoHandle";
+import { botTextHandle } from "../utils/botTextHandle";
 
 export function setupBotHandlers(bot: Telegraf) {
-    bot.on('text', async (ctx) => {
-        if (!('text' in ctx.message)) {
-            return;
-        }
-
-        const text = ctx.message.text
-        const userId = ctx.from.id
-
-        console.log(`recieve message ${text} from ${userId}`)
-
-        if (!text || !userId) {
-            return;
-        }
-
+    bot.on('photo', async (ctx) => {
         try {
-            const parsed = await parseWithGemini(text, userId)
-
-            if(typeof parsed === 'string') {
-                ctx.reply(parsed);
-                return;
-            }
-
-            console.log(parsed)
-            await saveTransactions(parsed)
-
-            const parsedSentToUser = parsed
-                ? `📊 Hasil Pencatatan:
-Jenis: ${parsed.type}
-Jumlah: Rp${parsed.amount.toLocaleString('id-ID')}
-Metode: ${parsed.method}
-Kategori: ${parsed.category}
-Catatan: ${parsed.note || '-'}
-Waktu: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}`
-                : 'Tidak dapat memproses input.';
-
-            await ctx.reply(parsedSentToUser);
-
-        } catch (e) {
-            console.error(e)
+            botPhotoHandle(ctx);
+        } catch (error) {
+            console.error('Error processing image:', error);
+            await ctx.reply('Sorry, there was an error processing your receipt. Please try again.');
         }
+    });
+
+    bot.on('text', async (ctx) => {
+        botTextHandle(ctx);
     })
 
     bot.command('start', async (ctx) => {
