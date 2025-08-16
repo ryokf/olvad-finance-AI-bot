@@ -1,7 +1,7 @@
 import { saveTransactions } from "../services/transactionService";
 import { parseWithGemini } from "../services/modelAiService";
 import { Telegraf } from "telegraf";
-import { welcomeMessage } from "../constant/welcomeText";
+import { welcomeMessage } from "../constant/welcomeMessage";
 
 export function setupBotHandlers(bot: Telegraf) {
     bot.on('text', async (ctx) => {
@@ -22,7 +22,19 @@ export function setupBotHandlers(bot: Telegraf) {
             const parsed = await parseWithGemini(text, userId)
             console.log(parsed)
             await saveTransactions(parsed)
-            await ctx.reply(parsed ? JSON.stringify(parsed, null, 2) : 'Tidak dapat memproses input.');
+
+            const parsedSentToUser = parsed
+                ? `📊 Hasil Pencatatan:
+Jenis: ${parsed.type}
+Jumlah: Rp${parsed.amount.toLocaleString('id-ID')}
+Metode: ${parsed.method}
+Kategori: ${parsed.category}
+Catatan: ${parsed.note || '-'}
+Waktu: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}`
+                : 'Tidak dapat memproses input.';
+
+            await ctx.reply(parsedSentToUser);
+
         } catch (e) {
             console.error(e)
         }
