@@ -20,6 +20,12 @@ export function setupBotHandlers(bot: Telegraf) {
 
         try {
             const parsed = await parseWithGemini(text, userId)
+
+            if(typeof parsed === 'string') {
+                ctx.reply(parsed);
+                return;
+            }
+
             console.log(parsed)
             await saveTransactions(parsed)
 

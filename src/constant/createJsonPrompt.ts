@@ -1,6 +1,6 @@
 import { TIMEZONE } from "../config/constants";
 
-export const createJsonPrompt = (userText: string, now: string) => {
+export const createJsonPrompt = (userText: string, now: string, menus: any[]) => {
     return `
 Kamu adalah parser transaksi untuk pembukuan warung kopi di Indonesia.
 TUGAS:
@@ -17,6 +17,10 @@ SKEMA FINAL (wajib diikuti):
   "note": string,
   "ts": "ISO 8601 (zona Asia/Jakarta)"
 }
+
+DAFTAR MENU:
+${menus.map(menu => `- ${menu.name}: ${menu.price}`).join("\n")}
+
 Kaidah:
 - Bahasa: Indonesia.
 - Mata uang default: IDR (Indonesia).
@@ -24,6 +28,8 @@ Kaidah:
 - Pahami padanan kata:
   income: "masuk", "penjualan", "qris masuk", "gofood", "shopeefood", "grabfood"
   expense: "keluar", "beli", "belanja", "bayar", "gaji", "sewa"
+- jika menu disebutkan, gunakan nama menu dan harga dari daftar menu. 
+- jika tidak disebutkan, isi harga dengan 0.
 - method bisa berisi: "cash", "qris", "transfer".
 - Waktu:
   - Jika user menulis "kemarin", "barusan", jam tertentu, konversi ke ISO 8601 dengan zona ${TIMEZONE}.
