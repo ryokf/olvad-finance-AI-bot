@@ -1,5 +1,5 @@
 import { parseWithGemini } from "../services/modelAiService";
-import { saveTransactions } from "../services/transactionService";
+import { getBalance, saveTransactions } from "../services/transactionService";
 
 export const botTextHandle = async (ctx: any) => {
     if (!('text' in ctx.message)) {
@@ -17,6 +17,7 @@ export const botTextHandle = async (ctx: any) => {
 
     try {
         const parsed = await parseWithGemini(text, userId)
+        const balance = await getBalance()
 
         if (typeof parsed === 'string') {
             ctx.reply(parsed);
@@ -27,13 +28,15 @@ export const botTextHandle = async (ctx: any) => {
         await saveTransactions(parsed)
 
         const parsedSentToUser = parsed
-            ? `📊 Hasil Pencatatan:
-Jenis: ${parsed.type}
+            ? `📊 Hasil Pencatatan:\n
+Jenis: ${parsed.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}
 Jumlah: Rp${parsed.amount.toLocaleString('id-ID')}
-Metode: ${parsed.method}
-Kategori: ${parsed.category}
-Catatan: ${parsed.note || '-'}
-Waktu: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}`
+Kategori: ${parsed.category || '-'}
+Waktu: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}\n
+Catatan: ${parsed.note || '-'}\n
+SALDO SEKARANG = Rp${balance.toLocaleString('id-ID')}\n
+Items: ${JSON.stringify(parsed.items, null, 2) || '-'}
+`
             : 'Tidak dapat memproses input.';
 
         await ctx.reply(parsedSentToUser);
