@@ -1,6 +1,6 @@
 import { model } from "../config/gemini";
 import { safeParseJson } from "../utils/safeParseJson";
-import { createJsonPrompt } from "../constant/createJsonPrompt";
+import { createJsonPrompt } from "../prompt/createJsonPrompt";
 import { getMenu } from "./menuService";
 
 export const buildPrompt = async (userText: string) => {
