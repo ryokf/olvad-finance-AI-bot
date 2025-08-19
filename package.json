@@ -31,6 +31,7 @@
   "dependencies": {
     "@google-cloud/vision": "^5.3.3",
     "@google/generative-ai": "^0.24.1",
+    "@notionhq/client": "^4.0.2",
     "@supabase/supabase-js": "^2.55.0",
     "axios": "^1.11.0",
     "cors": "^2.8.5",

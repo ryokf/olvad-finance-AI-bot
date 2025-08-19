@@ -10,6 +10,7 @@ import { getMenu } from "../services/menuService";
 import { getIngredients } from "../services/ingredientsService";
 import { getMenuIngredients } from "../services/menuIngredientsService";
 import { productPrompt } from "../prompt/productPrompt";
+import { syncAllTransactions } from "../services/NotionService";
 
 export function setupBotHandlers(bot: Telegraf) {
     bot.command('start', async (ctx) => {
@@ -69,6 +70,14 @@ export function setupBotHandlers(bot: Telegraf) {
         const raw = response.text();
 
         await ctx.reply(raw);
+    });
+
+    bot.command('sync', async (ctx) => {
+        await ctx.reply('Syncing transactions...');
+        // panggil fungsi ini saat mau sync:
+        syncAllTransactions()
+            .then(() => console.log("Sync semua transaksi ke Notion selesai"))
+            .catch((err) => console.error("Error saat sync:", err));
     });
 
     bot.on('photo', async (ctx) => {
