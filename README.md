@@ -1,6 +1,28 @@
-# Olvad Finance AI Bot
-
-**Olvad Finance AI Bot** adalah bot Telegram berbasis AI yang dirancang untuk membantu pemilik warung kopi mengelola transaksi keuangan secara cepat dan terstruktur.  Bot ini menggunakan model AI generatif untuk memproses teks maupun foto struk, menyimpan data ke **Supabase**, dan menyinkronkan transaksi ke **Notion** untuk pembuatan dashboard keuangan otomatis.
+# Olvad Intelligenc2. Akun dan kunci API untuk:
+   * **Telegram Bot** — token bot dari [BotFather].
+   * **Google G```tree
+.
+├── src
+│   ├── config/          # Konfigurasi untuk API (Gemini, Supabase, Notion, timezone)
+│   ├── constant/        # Konstanta seperti pesan sambutan
+│   ├── controllers/     # Handler utama untuk bot Telegram
+│   ├── prompt/          # Template prompt untuk AI (createJsonPrompt, getReportPrompt, dll.)
+│   ├── services/        # Logika bisnis seperti transaksi, menu, OCR, integrasi Notion
+│   ├── types/          # Definisi tipe TypeScript
+│   ├── utils/          # Fungsi pendukung (handling foto dan teks, parse JSON)
+│   └── index.ts         # Titik awal aplikasi
+├── package.json         # Definisi skrip dan dependensi【379068413337833†L6-L45】
+├── tsconfig.json        # Konfigurasi TypeScript
+└── …
+```emini)** — API key untuk `@google/generative‑ai`【880744236196853†L0-L7】.
+   * **Supabase** — URL proyek dan service role key【60216906527799†L0-L7】.
+   * **Notion** — token integrasi dan ID basis data (incomes, expenses) serta ID halaman dashboard【233681204317501†L4-L12】.
+   * Opsional: **Vision API** atau library OCR jika ingin mengganti `tesseract.js`.
+3. Buat tabel di Supabase:
+   * **transactions** — menyimpan `id`, `ts`, `type`, `amount`, `method`, `category`, `note`, `items_summary`, `raw_text`, `is_data_test` dan kolom lain sesuai kebutuhan.
+   * **menus** — menyimpan `id`, `name`, `price`.
+   * **ingredients** — menyimpan `id`, `name`, `price`, `qty_per_price`, `qty_per_serving`.
+   * **menu_ingredients** — tabel pivot dengan `menu_id`, `ingredient_id`, dan `amount`.*Olvad Intelligence System** adalah bot Telegram berbasis AI yang dirancang untuk membantu pemilik warung kopi mengelola transaksi keuangan secara cepat dan terstruktur.  Bot ini menggunakan model AI generatif untuk memproses teks maupun foto struk, menyimpan data ke **Supabase**, dan menyinkronkan transaksi ke **Notion** untuk pembuatan dashboard keuangan otomatis.
 
 Bot ditulis menggunakan TypeScript dan memanfaatkan berbagai library seperti **Telegraf** untuk interaksi Telegram, **@google/generative ai** (Gemini) untuk parsing teks dan pertanyaan analitis, **tesseract.js** untuk OCR struk, serta **@notionhq/client** untuk pembaruan dashboard keuangan di Notion.  Struktur aplikasi modular memudahkan pengembangan dan pemeliharaan.
 
@@ -87,8 +109,8 @@ Jalankan bot menggunakan salah satu perintah di atas, kemudian buka Telegram dan
 |---------|-----------|
 | **/start** | Menampilkan pesan sambutan yang menjelaskan cara mencatat pemasukan dan pengeluaran【268663699506360†L1-L17】. |
 | **/help** | Menampilkan daftar perintah yang dapat digunakan (start, help, finance, menu)【921579727637463†L21-L31】. |
-| **/finance\u00a0<pertanyaan>** | Menganalisis data transaksi dan menu.  Jika argumen adalah `report`, bot membuat ringkasan keuangan harian; jika berupa pertanyaan lain, bot menggunakan AI untuk menjawab berdasarkan data transaksi【921579727637463†L34-L56】. |
-| **/menu\u00a0<pertanyaan>** | Menjawab pertanyaan terkait menu, bahan dan rasio bahan; cocok untuk menghitung penggunaan bahan berdasarkan penjualan menu【921579727637463†L59-L73】. |
+| **/finance [pertanyaan]** | Menganalisis data transaksi dan menu.  Jika argumen adalah `report`, bot membuat ringkasan keuangan harian; jika berupa pertanyaan lain, bot menggunakan AI untuk menjawab berdasarkan data transaksi【921579727637463†L34-L56】. |
+| **/menu [pertanyaan]** | Menjawab pertanyaan terkait menu, bahan dan rasio bahan; cocok untuk menghitung penggunaan bahan berdasarkan penjualan menu【921579727637463†L59-L73】. |
 | **/sync** | Menyinkronkan seluruh transaksi yang tersimpan di Supabase ke basis data Notion【921579727637463†L76-L83】. |
 | **Kirim pesan teks** | Tanpa perintah, bot akan mencoba menafsirkan pesan sebagai pencatatan transaksi.  Bot memproses teks melalui Gemini, menyimpan hasilnya ke Supabase, menampilkan ringkasan ke pengguna dan saldo terkini【237398157318541†L18-L38】. |
 | **Kirim foto struk** | Bot akan melakukan OCR terhadap gambar struk, memproses teks dengan AI, dan menyimpan transaksinya【948087346764556†L22-L50】. |

@@ -1,7 +1,7 @@
 {
-  "name": "olvad-finance-bot",
+  "name": "olvad-intelligence-system",
   "version": "1.0.0",
-  "description": "",
+  "description": "Olvad Intelligence System - AI-powered business management system",
   "private": true,
   "main": "dist/index.js",
   "scripts": {
