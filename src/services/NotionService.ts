@@ -56,11 +56,11 @@ async function getOrCreateDashboardContainer(pageId: string): Promise<string> {
             page_size: 100,
             start_cursor: cursor,
         });
-        // Cari toggle block dengan judul khusus
+        // Cari callout block dengan judul khusus
         const found = res.results.find((b: any) =>
-            b.type === "toggle" &&
-            Array.isArray(b.toggle?.rich_text) &&
-            b.toggle.rich_text[0]?.plain_text === DASHBOARD_CONTAINER_TITLE
+            b.type === "callout" &&
+            Array.isArray(b.callout?.rich_text) &&
+            b.callout.rich_text[0]?.plain_text === DASHBOARD_CONTAINER_TITLE
         );
         if (found) {
             return (found as any).id;
@@ -68,14 +68,16 @@ async function getOrCreateDashboardContainer(pageId: string): Promise<string> {
         if (!(res as any).has_more) break;
         cursor = (res as any).next_cursor;
     }
-    // Jika belum ada, buat toggle container kosong
+    // Jika belum ada, buat callout container kosong
     const created = await notion.blocks.children.append({
         block_id: pageId,
         children: [
             {
-                type: "toggle",
-                toggle: {
+                type: "callout",
+                callout: {
                     rich_text: [{ type: "text", text: { content: DASHBOARD_CONTAINER_TITLE } }],
+                    icon: { type: "emoji", emoji: "🧾" },
+                    color: "gray_background",
                     children: []
                 }
             }
@@ -85,6 +87,9 @@ async function getOrCreateDashboardContainer(pageId: string): Promise<string> {
 }
 
 export async function updateDashboard(summary: { balance: number; incomeMonth: number; expenseMonth: number; }) {
+
+    // NOTE: Letakkan callout ini di posisi paling atas secara manual sekali saja di Notion UI.
+    // Setelah itu kode hanya akan membersihkan & mengisi ulang isi di dalam callout ini.
 
     const now = new Date();
     const lastSyncText = `Last Sync : ${now.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}`;
