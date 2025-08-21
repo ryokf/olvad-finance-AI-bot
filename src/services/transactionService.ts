@@ -96,7 +96,7 @@ export const getBalance = async () => {
     return balance;
 };
 
-async function getSummary() {
+export async function getSummary() {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);

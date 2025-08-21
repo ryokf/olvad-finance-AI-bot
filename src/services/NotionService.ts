@@ -1,17 +1,47 @@
 const DASHBOARD_CONTAINER_TITLE = "[AUTO] Ringkasan Keuangan";
-import { notion, NOTION_FINANCE_PAGE_ID } from "../config/notion";
+import { notion, NOTION_FINANCE_PAGE_ID, NOTION_INCOMES_DB_ID, NOTION_EXPENSES_DB_ID } from "../config/notion";
 import { supabase } from "../config/supabase";
 import { upsertTransactionToNotion } from "./notionSync";
 import type { BlockObjectRequest } from '@notionhq/client/build/src/api-endpoints';
+import { getSummary } from "./transactionService";
 
+
+async function deleteAllNotionRecords(databaseId: string) {
+    let hasMore = true;
+    let startCursor: string | undefined = undefined;
+
+    while (hasMore) {
+        const response = await notion.databases.query({
+            database_id: databaseId,
+            start_cursor: startCursor,
+        });
+
+        // Delete each page in the current batch
+        for (const page of response.results) {
+            await notion.pages.update({
+                page_id: page.id,
+                archived: true, // This will delete/archive the page
+            });
+        }
+
+        hasMore = response.has_more;
+        startCursor = response.next_cursor as string;
+    }
+}
 
 export async function syncAllTransactions() {
+    // Delete all existing records from both databases
+    await deleteAllNotionRecords(NOTION_INCOMES_DB_ID);
+    await deleteAllNotionRecords(NOTION_EXPENSES_DB_ID);
+
+    // Get all transactions from Supabase
     const { data, error } = await supabase
         .from('transactions')
         .select('*'); // ambil semua data
 
     if (error) throw error;
 
+    // Add new records
     for (const row of data ?? []) {
         await upsertTransactionToNotion({
             id: row.id,
@@ -25,6 +55,8 @@ export async function syncAllTransactions() {
             raw_text: row.raw_text
         });
     }
+
+    await updateDashboard(await getSummary());
 }
 
 // Helper untuk menghapus semua child blocks dari sebuah page
